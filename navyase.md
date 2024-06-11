@@ -1,41 +1,46 @@
 # Logical View of Banking Application
 
-## Component Diagram
+## Business Logic
 
 ```mermaid
-graph TD;
-    subgraph "Banking Application"
-        userInterface(User Interface)
-        presentationLayer(Presentation Layer)
-        businessLogic(Business Logic)
-        dataAccess(Data Access)
-        database(Database)
-        
-        userInterface --> presentationLayer
-        presentationLayer --> businessLogic
-        businessLogic --> dataAccess
-        dataAccess --> database
-    end
 classDiagram
-    class User {
-        username: string
-        password: string
-        authenticate(): boolean
-        requestTransaction(): void
-    }
     class Account {
-        accountNumber: string
-        balance: float
-        deposit(amount: float): void
-        withdraw(amount: float): void
+        +balance: float
+        +deposit(amount: float): void
+        +withdraw(amount: float): void
     }
     class Transaction {
-        transactionID: string
-        amount: float
-        timestamp: datetime
-        processTransaction(): void
+        +amount: float
+        +date: Date
+        +type: string
+        +execute(): void
+    }
+    Account "1" -- "1..*" Transaction
+
+    class UserInterface {
+        +displayMenu(): void
+        +getUserInput(): void
+    }
+    class Controller {
+        +processRequest(): void
+    }
+    class Service {
+        +executeTransaction(): void
+    }
+    class DAO {
+        +saveTransaction(): void
+        +updateAccountBalance(): void
     }
     
-    User "1" -- "many" Account
-    Transaction "1" -- "1" Account
+    UserInterface --> Controller
+    Controller --> Service
+    Service --> DAO
 
+    class Server {
+    }
+
+    class Database {
+    }
+
+    Controller --> Server
+    Server --> Database
